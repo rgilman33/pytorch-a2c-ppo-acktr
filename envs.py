@@ -3,9 +3,14 @@ import os
 import gym
 from gym.spaces.box import Box
 
-from baselines import bench
-from baselines.common.atari_wrappers import make_atari, wrap_deepmind
+#from baselines import bench
 
+from monitor import *
+#from baselines.common.atari_wrappers import make_atari, wrap_deepmind
+
+from atari_wrappers import *
+
+# manually added both these files bc baselines isn't working right
 try:
     import pybullet_envs
 except ImportError:
@@ -19,7 +24,7 @@ def make_env(env_id, seed, rank, log_dir):
         if is_atari:
             env = make_atari(env_id)
         env.seed(seed + rank)
-        env = bench.Monitor(env, os.path.join(log_dir, str(rank)))
+        env = Monitor(env, os.path.join(log_dir, str(rank)))
         if is_atari:
             env = wrap_deepmind(env)
             env = WrapPyTorch(env)
