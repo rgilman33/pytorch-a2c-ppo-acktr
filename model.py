@@ -23,8 +23,9 @@ class FFPolicy(nn.Module):
     def act(self, inputs, states, masks, deterministic=False):
         value, x, states = self(inputs, states, masks)
         action = self.dist.sample(x, deterministic=deterministic)
+
         action_log_probs, dist_entropy = self.dist.logprobs_and_entropy(x, action)
-        return value, action, action_log_probs, states
+        return value, action, action_log_probs, dist_entropy, states
 
     def evaluate_actions(self, inputs, states, masks, actions):
         value, x, states = self(inputs, states, masks)
@@ -39,6 +40,7 @@ def printstat(self, input, output):
     print('')
     print('input: mean {}, std {}'.format(input[0].data.mean(), input[0].data.std()))
     print('output: mean {}, std {}'.format(output[0].data.mean(), output[0].data.std()))
+
 
 class CNNPolicy(FFPolicy):
     def __init__(self, num_inputs, action_space, use_gru):

@@ -10,6 +10,7 @@ class RolloutStorage(object):
         self.value_preds = torch.zeros(num_steps + 1, num_processes, 1)
         self.returns = torch.zeros(num_steps + 1, num_processes, 1)
         self.action_log_probs = torch.zeros(num_steps, num_processes, 1)
+        self.dist_entropy = torch.zeros(num_steps, num_processes, 1)
         if action_space.__class__.__name__ == 'Discrete':
             action_shape = 1
         else:
@@ -29,11 +30,12 @@ class RolloutStorage(object):
         self.actions = self.actions.cuda()
         self.masks = self.masks.cuda()
 
-    def insert(self, step, current_obs, state, action, action_log_prob, value_pred, reward, mask):
+    def insert(self, step, current_obs, state, action, action_log_prob, value_pred, reward, mask, dist_entropy):
         self.observations[step + 1].copy_(current_obs)
         self.states[step + 1].copy_(state)
         self.actions[step].copy_(action)
         self.action_log_probs[step].copy_(action_log_prob)
+        self.dist_entropy[step].copy_(dist_entropy) #RG added
         self.value_preds[step].copy_(value_pred)
         self.rewards[step].copy_(reward)
         self.masks[step + 1].copy_(mask)
